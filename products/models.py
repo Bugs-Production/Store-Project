@@ -27,6 +27,7 @@ class Product(models.Model):
     quantity = models.PositiveIntegerField('Количество товара', default=0)
     image = models.ImageField('Картинка для товара', upload_to='products_images')
     category = models.ForeignKey(to=ProductCategory, on_delete=models.CASCADE, verbose_name='Категория товара')
+    time_created = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
         return f'Товар - {self.name} | {self.category}'

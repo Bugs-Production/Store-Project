@@ -4,6 +4,7 @@ from django.views.generic.list import ListView
 
 from .models import Basket, Product, ProductCategory
 
+
 # Create your views here.
 
 def index(request):
@@ -23,7 +24,8 @@ class ProductsListView(ListView):
     def get_queryset(self):
         queryset = super(ProductsListView, self).get_queryset()
         category_id = self.kwargs.get('category_id')
-        return queryset.filter(category_id=category_id) if category_id else queryset.all()
+        queryset = queryset.filter(category_id=category_id) if category_id else queryset.all()
+        return queryset.order_by('time_created')
 
 
 @login_required()
