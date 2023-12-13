@@ -1,12 +1,8 @@
-import uuid
-from datetime import timedelta
-
 from django import forms
 from django.contrib.auth.forms import (AuthenticationForm, UserChangeForm,
                                        UserCreationForm)
-from django.utils.timezone import now
-
-from .models import EmailVerification, User
+from .models import User
+from .tasks import send_verification_email
 
 
 class UserLoginForm(AuthenticationForm):
@@ -62,10 +58,7 @@ class UserRegistrationForm(UserCreationForm):
 
     def save(self, commit=True):  # Создание логики для верификации почты
         user = super(UserRegistrationForm, self).save(commit=True)
-        code = uuid.uuid4()
-        expiration = timedelta(hours=48) + now()
-        record = EmailVerification.objects.create(code=code, user=user, expiration=expiration)
-        record.send_verification_email()
+        send_verification_email.delay(user.id)  # Вызов Celery
         return user
 
 
